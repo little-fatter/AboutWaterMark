@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>text-demo</title>
+</head>
+<body>
+    <div id="app">
+        <div>waterMark</div>
+        <div>test</div>
+    </div>
+    <script>
+        
+        function waterCreate(item,attrs) {
+            for( let i in attrs ) {
+                item['style'][i] = attrs[i]
+            }
+        }
+        const waterWrapper = document.createElement('div')
+        function createWaterMark() {
+            waterCreate(waterWrapper,Object.create({
+                position: 'fixed',
+                inset: '0px',
+                overflow: 'hidden',
+                display: 'flex',
+                opacity: '1',
+                'z-index': '999',
+                'pointer-events': 'none',
+                'flex-wrap': 'wrap',
+                top: 0,
+                left: 0
+            }))    
+            const waterWidth = 140;
+            const waterHeight = 160;
+            const { clientWidth, clientHeight } = document.documentElement || document.body;
+            const column = Math.ceil(clientWidth / waterWidth)
+            const row = Math.ceil(clientHeight / waterHeight)
+            for( let i = 0; i < column * row; i++) {
+                const wrap = document.createElement('div')
+                wrap.innerHTML = 'myTest'
+                waterCreate(wrap,Object.create({
+                    transform: `rotate(-15deg)`,
+                    position: 'relative',
+                    width: `${waterWidth}px`,
+                    height: `${waterHeight}px`,
+                    flex: `0 0 ${waterWidth}px`,
+                    overflow: 'hidden',
+                    opacity: 0.1,
+                }))
+                waterWrapper.appendChild(wrap)
+            }
+            document.body.appendChild(waterWrapper)
+        }
+        createWaterMark()
+    </script>
+    <script>
+        // 观察器的配置（需要观察什么变动）
+        const config = { characterData: true, attributes: true, childList: true, subtree: true };
+        // 当观察到变动时执行的回调函数
+        const callback = function (mutationsList, observer) {
+            for (let mutation of mutationsList) {
+                const target = mutation.target
+                if( !target || (target !== waterWrapper && target.parentElement !==waterWrapper) ) {
+                    mutation.removedNodes.forEach(function (item) {
+                        if (item === waterWrapper) {
+                            createWaterMark()
+                        }
+                    });  
+                    return
+                } 
+                target.parentElement.removeChild(target)
+            }
+        }; 
+        // 监听元素
+        const targetNode = document.body;
+        // 创建一个观察器实例并传入回调函数
+        const observer = new MutationObserver(callback);
+        // 以上述配置开始观察目标节点
+        observer.observe(targetNode, config);
+        window.onbeforeunload = function () {
+            observer.disconnect()
+        } 
+    </script>
+</body>
+</html>

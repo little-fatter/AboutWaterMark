@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>watermark.js - using images</title>
+  <style>
+      pre {
+          background-color: #eee;
+      }
+  </style>
+  <script src="./scripts/watermark.js"></script>
+</head>
+
+<body>
+  <div class="container">
+      <div class="example" id="lower-right">
+        <h2>右下</h2>
+        <pre>
+          <code class="javascript">
+watermark(['img/shepherd.jpg', 'img/logo.png'])
+  .image(watermark.image.lowerRight(0.5))
+  .then(function (img) {
+    document.getElementById('lower-right').appendChild(img);
+  });
+          </code>
+        </pre>
+      </div>
+
+      <div class="example" id="lower-left">
+        <h2>左下</h2>
+        <pre>
+          <code class="javascript">
+watermark(['img/forest.jpg', 'img/logo.png'])
+  .image(watermark.image.lowerLeft(0.5))
+  .then(function (img) {
+    document.getElementById('lower-left').appendChild(img);
+  });
+          </code>
+        </pre>
+      </div>
+
+      <div class="example" id="upper-right">
+        <h2>右上</h2>
+        <pre>
+          <code class="javascript">
+watermark(['img/field.jpg', 'img/logo.png'])
+  .image(watermark.image.upperRight(0.5))
+  .then(function (img) {
+    document.getElementById('upper-right').appendChild(img);
+  });
+          </code>
+        </pre>
+      </div>
+
+      <div class="example" id="upper-left">
+        <h2>左上</h2>
+        <pre>
+          <code class="javascript">
+watermark(['img/wolf.jpg', 'img/logo.png'])
+  .image(watermark.image.upperLeft(0.5))
+  .then(function (img) {
+    document.getElementById('upper-left').appendChild(img);
+  });
+          </code>
+        </pre>
+      </div>
+
+      <div class="example" id="center">
+        <h2>中央</h2>
+        <pre>
+          <code class="javascript">
+watermark(['img/coffee.jpg', 'img/logo.png'])
+  .image(watermark.image.center(0.5))
+  .then(function (img) {
+    document.getElementById('center').appendChild(img);
+  });
+          </code>
+        </pre>
+      </div>
+
+      <div class="example" id="arbitrary">
+        <h2>任意位置</h2>
+        <pre>
+          <code class="javascript">
+var getX = function(boat, logo) {
+  return 73;
+};
+
+var getY = function(boat, logo) {
+  return 63;
+};
+
+// atPos is the basis for all positioning functions
+watermark(['img/boat.jpg', 'img/logo.png'])
+  .image(watermark.image.atPos(getX, getY, 0.5))
+  .then(function (img) {
+    document.getElementById('arbitrary').appendChild(img);
+  });
+          </code>
+        </pre>
+      </div>
+
+      <div class="example" id="multiple">
+        <h2>多水印</h2>
+        <pre>
+          <code class="javascript">
+// using load to draw additional images
+watermark(['img/boat.jpg', 'img/logo.png'])
+  .image(watermark.image.lowerRight(0.5))
+  .load(['img/peridot.png'])
+  .image(watermark.image.upperLeft(0.5))
+  .then(function (img) {
+    document.getElementById('multiple').appendChild(img);
+  });
+          </code>
+        </pre>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // lower right positioning
+    watermark(['img/shepherd.jpg', 'img/logo.png'])
+      .image(watermark.image.lowerRight(0.5))
+      .then(function (img) {
+        var pre = document.querySelector('#lower-right pre');
+        pre.parentNode.insertBefore(img, pre);
+      });
+
+    // lower left positioning
+    watermark(['img/forest.jpg', 'img/logo.png'])
+      .image(watermark.image.lowerLeft(0.5))
+      .then(function (img) {
+        var pre = document.querySelector('#lower-left pre');
+        pre.parentNode.insertBefore(img, pre);
+      });
+
+    // upper right positioning
+    watermark(['img/field.jpg', 'img/logo.png'])
+      .image(watermark.image.upperRight(0.5))
+      .then(function (img) {
+        var pre = document.querySelector('#upper-right pre');
+        pre.parentNode.insertBefore(img, pre);
+      });
+
+    // upper left positioning
+    watermark(['img/wolf.jpg', 'img/logo.png'])
+      .image(watermark.image.upperLeft(0.5))
+      .then(function (img) {
+        var pre = document.querySelector('#upper-left pre');
+        pre.parentNode.insertBefore(img, pre);
+      });
+
+    // upper left positioning
+    watermark(['img/coffee.jpg', 'img/logo.png'])
+      .image(watermark.image.center(0.5))
+      .then(function (img) {
+        var pre = document.querySelector('#center pre');
+        pre.parentNode.insertBefore(img, pre);
+      });
+
+    // position anywhere
+    var getX = function(boat, logo) {
+      return 73;
+    };
+
+    var getY = function(boat, logo) {
+      return 63;
+    };
+
+    watermark(['img/boat.jpg', 'img/logo.png'])
+      .image(watermark.image.atPos(getX, getY, 0.5))
+      .then(function (img) {
+        var pre = document.querySelector('#arbitrary pre');
+        pre.parentNode.insertBefore(img, pre);
+      });
+
+    // multiple images
+    watermark(['img/boat.jpg', 'img/logo.png'])
+      .image(watermark.image.lowerRight(0.5))
+      .load(['img/peridot.png'])
+      .image(watermark.image.upperLeft(0.5))
+      .then(function (img) {
+        var pre = document.querySelector('#multiple pre');
+        pre.parentNode.insertBefore(img, pre);
+      });
+  </script>
+
+
+</body>
+
+</html>

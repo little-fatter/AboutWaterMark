@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>svg-demo</title>
+</head>
+<body>
+    <div id="app">
+        <div>waterMark</div>
+        <div>test</div>        
+    </div>
+    <script src="helper.js"></script>
+    <script>
+        function waterCreate () {
+                const svgStr = 
+                `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="140px" height="160px">
+                        <text x="0px" y="30px" dy="16px"
+                        text-anchor = "start"
+                        stroke="#000"
+                        stroke-opacity="0.1"
+                        fill="none"
+                        transform="rotate(-30)"
+                        font-weight="100"
+                        >
+                            myTest
+                        </text>
+                    </svg> 
+                `
+                return `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgStr)))}`
+            }
+        const waterMark = document.createElement('div');
+        function createWaterMark () {
+            createAttr(waterMark,Object.create(commonAttr))
+            waterMark.style.backgroundImage = `url(${waterCreate()})`
+            document.body.appendChild(waterMark);
+        }
+        createWaterMark()
+    </script>
+    <script>
+        // 观察器的配置（需要观察什么变动）
+        const config = { characterData: true, attributes: true, childList: true, subtree: true };
+        // 当观察到变动时执行的回调函数
+        const callback = function (mutationsList, observer) {
+            for (let mutation of mutationsList) {
+                const target = mutation.target
+                if( !target || target !== waterMark ) {
+                    mutation.removedNodes.forEach(function (item) {
+                        if (item === waterMark) {
+                            createWaterMark()
+                        }
+                    });  
+                    return
+                } 
+                target.parentElement.removeChild(target)
+            }
+        };
+        // 监听元素
+        const targetNode = document.body;
+        // 创建一个观察器实例并传入回调函数
+        const observer = new MutationObserver(callback);
+        // 以上述配置开始观察目标节点
+        observer.observe(targetNode, config);
+    </script>
+</body>
+</html>

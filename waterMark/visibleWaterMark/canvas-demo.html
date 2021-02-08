@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>canvas-demo</title>
+</head>
+<body>
+    <div id="app">
+        <div>waterMark</div>
+        <div>test</div>
+    </div>
+    <script src="helper.js"></script>
+    <script>
+        function waterCreate() {
+            const angle = -30;
+            const text = 'myTest';
+            const canvas = document.createElement('canvas');
+            canvas.width = 140;
+            canvas.height = 160;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0,0,140,160);
+            ctx.globalAlpha = 0.1;
+            ctx.font = '18px serif';
+            ctx.rotate(Math.PI / 180 * angle);
+            ctx.fillText(text, 0, 50);
+            return canvas.toDataURL();
+        }
+        const waterMark = document.createElement('div')
+        function createWaterMark () {
+            createAttr(waterMark,Object.create(commonAttr))
+            waterMark.style.background = `url(${waterCreate()})`
+            document.body.appendChild(waterMark)
+        }
+        createWaterMark ()
+    </script>
+</body>
+</html>

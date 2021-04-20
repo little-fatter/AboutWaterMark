@@ -56,7 +56,8 @@ export default class Module {
 
   // 给每个子模块执行指定回调，这里使用了 util 中的 forEachValue 方法来实现
   forEachChild (fn) {
-    forEachValue(this._children, fn)
+    // Object.keys(this._children).forEach(key => fn(this._children[key], key))
+    forEachValue(this._children, fn)  
   }
 
   // 对每一个 getter 执行指定回调

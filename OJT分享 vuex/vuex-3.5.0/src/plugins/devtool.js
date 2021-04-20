@@ -18,7 +18,7 @@ export default function devtoolPlugin (store) {
     store.replaceState(targetState)
   })
   
-  // 3. mutation被执行时，触发hook，并提供被触发的mutation函数和当前的state状态
+  // 3. mutation/action被执行时，触发hook，并提供被触发的mutation/action函数和当前的state状态
   store.subscribe((mutation, state) => {
     devtoolHook.emit('vuex:mutation', mutation, state)
   }, { prepend: true })

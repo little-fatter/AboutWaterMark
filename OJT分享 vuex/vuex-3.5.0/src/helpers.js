@@ -124,8 +124,9 @@ export const mapActions = normalizeNamespace((namespace, actions) => {
 })
 
 /**
- * Rebinding namespace param for mapXXX function in special scoped, and return them by simple object
- * @param {String} namespace
+ * createNamespacedHelpers 创建基于命名空间的组件绑定辅助函数
+ * 用于快速为命名空间生成 mapState, mapGetters, mapMutations, mapActions 等属性
+ *  * @param {String} namespace
  * @return {Object}
  */
 export const createNamespacedHelpers = (namespace) => ({
@@ -136,7 +137,7 @@ export const createNamespacedHelpers = (namespace) => ({
 })
 
 /**
- * Normalize the map
+ * 把内容序列化成一个 Map 的形式，返回一个数组，方便调用，传入参数只能是数组或者对象
  * normalizeMap([1, 2, 3]) => [ { key: 1, val: 1 }, { key: 2, val: 2 }, { key: 3, val: 3 } ]
  * normalizeMap({a: 1, b: 2, c: 3}) => [ { key: 'a', val: 1 }, { key: 'b', val: 2 }, { key: 'c', val: 3 } ]
  * @param {Array|Object} map
@@ -167,6 +168,7 @@ function isValidMap (map) {
  */
 function normalizeNamespace (fn) {
   return (namespace, map) => {
+    // 调节参数，是用于处理没有传入 namespace 的情况的
     if (typeof namespace !== 'string') {
       map = namespace
       namespace = ''

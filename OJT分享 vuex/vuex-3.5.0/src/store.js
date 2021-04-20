@@ -80,7 +80,7 @@ export class Store {
   }
   // commit、dispatch 具体实现
   commit (_type, _payload, _options) {
-    // check object-style commit
+    // 对参数统一处理
     const {
       type,
       payload,
@@ -119,7 +119,7 @@ export class Store {
   }
 
   dispatch (_type, _payload) {
-    // check object-style dispatch
+     // 对参数统一处理
     const {
       type,
       payload
@@ -189,19 +189,20 @@ export class Store {
     return genericSubscribe(subs, this._actionSubscribers, options)
   }
 
+  // 用于监听一个 getter 值的变化
   watch (getter, cb, options) {
     if (__DEV__) {
       assert(typeof getter === 'function', `store.watch only accepts a function.`)
     }
     return this._watcherVM.$watch(() => getter(this.state, this.getters), cb, options)
   }
-
+  // 用于修改 state，主要用于 devtool 插件的时空穿梭功能
   replaceState (state) {
     this._withCommit(() => {
       this._vm._data.$$state = state
     })
   }
-
+  // 用于动态注册 module：
   registerModule (path, rawModule, options = {}) {
     if (typeof path === 'string') path = [path]
 
@@ -215,7 +216,7 @@ export class Store {
     // reset store to update getters...
     resetStoreVM(this, this.state)
   }
-
+  // 根据 path 注销动态注册的 module
   unregisterModule (path) {
     if (typeof path === 'string') path = [path]
 
@@ -320,7 +321,8 @@ function resetStoreVM (store, state, hot) {
   })
   Vue.config.silent = silent
 
-  // enable strict mode for new vm
+  /* 若开启 strict 模式，使用$watch 来观察 state 的变化，
+  如果此时的 store._committing 不为 true，便是在 mutation 之外修改 state，报错 */
   if (store.strict) {
     enableStrictMode(store)
   }
@@ -351,7 +353,7 @@ function installModule (store, rootState, path, module, hot) {
     store._modulesNamespaceMap[namespace] = module
   }
 
-  /* 如果当前不是子模块也不是热更新状态，那么就是新增子模块，
+  /* 如果当前不是根模块也不是热更新状态，那么就是新增子模块，
   这个时候要取到父模块，然后插入到父模块的子模块列表中 */
   if (!isRoot && !hot) {
     const parentState = getNestedState(rootState, path.slice(0, -1))
@@ -386,7 +388,7 @@ function installModule (store, rootState, path, module, hot) {
     const namespacedType = namespace + key
     registerGetter(store, namespacedType, getter, local)
   })
-
+  // 递归注册子模块
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
@@ -475,7 +477,7 @@ function makeLocalGetters (store, namespace) {
 }
 
 function registerMutation (store, type, handler, local) {
-  // 获取store中的对应mutation type的处理函数集合
+  // 包一层函数，然后保存到 store._mutations 里面
   const entry = store._mutations[type] || (store._mutations[type] = [])
   // commit实际调用的不是我们传入的handler，而是经过封装的
   entry.push(function wrappedMutationHandler (payload) {
@@ -509,6 +511,9 @@ function registerAction (store, type, handler, local) {
 }
 
 function registerGetter (store, type, rawGetter, local) {
+  /* 对 getters 进行判断，不允许重复定义的，然后包裹一层函数，
+  这样在调用时只需要给上 store 参数，而用户的函数里会包含 
+  local.state local.getters store.state store.getters */
   if (store._wrappedGetters[type]) {
     if (__DEV__) {
       console.error(`[vuex] duplicate getter key: ${type}`)
@@ -533,6 +538,7 @@ function enableStrictMode (store) {
   }, { deep: true, sync: true })
 }
 
+// 根据 path 查找 state 上的嵌套 state
 function getNestedState (state, path) {
   return path.reduce((state, key) => state[key], state)
 }

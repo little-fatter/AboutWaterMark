@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>canvas-pic</title>
+</head>
+<body>
+    <canvas id="canvas" width="256" height="256"></canvas>
+    <script>
+        var ctx = document.getElementById('canvas').getContext('2d');
+        var img = new Image();
+        var originalData;
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0,256,256);
+            ctx.font = '30px Microsoft Yahei';
+            ctx.fillText('水印',180, 250);
+        };
+        img.src = '../../watermarkjs/img/bear.jpg';
+    </script>
+</body>
+</html>

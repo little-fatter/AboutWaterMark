@@ -53,7 +53,7 @@
         document.body.appendChild(waterWrapper)
     </script>
 ```
-###canvas实现
+### canvas实现
 canvas 实现原理是利用 canvas 绘制一个水印，然后转为 base64 图片，通过 canvas.toDataUrl() 拿到文件流url，然后填充在元素背景中，背景图片属性设为重复。
 ```
 <div id="app">
@@ -97,7 +97,7 @@ canvas 实现原理是利用 canvas 绘制一个水印，然后转为 base64 图
         createWaterMark ()
     </script>
 ```
-###svg实现
+### svg实现
 svg 实现原理和 canvas 相同，主要还是生成背景图片，区别在于生成Url的方法不同
 ```javascript
  function waterCreate () {

@@ -10,33 +10,51 @@
         <div>waterMark</div>
         <div>test</div>        
     </div>
-    <script src="helper.js"></script>
+    <!-- <script src="helper.js"></script> -->
     <script>
-        function waterCreate () {
-                const svgStr = 
-                `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="140px" height="160px">
-                        <text x="0px" y="30px" dy="16px"
-                        text-anchor = "start"
-                        stroke="#000"
-                        stroke-opacity="0.1"
-                        fill="none"
-                        transform="rotate(-30)"
-                        font-weight="100"
-                        >
-                            myTest
-                        </text>
-                    </svg> 
-                `
-                return `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgStr)))}`
+        // 元素属性，撑满屏幕背景图片重复
+        const commonAttr = {
+            position: 'fixed',
+            top: '0px',
+            right: '0px',
+            bottom: '0px',
+            left: '0px',
+            pointerEvents: 'none',
+            backgroundRepeat: 'repeat',
+        }
+         // 生成element
+         function createWaterMark (attrs) {
+            const dv = document.createElement('div')
+            for( let i in attrs ) {
+                dv['style'][i] = attrs[i]
             }
-        const waterMark = document.createElement('div');
-        function createWaterMark () {
-            createAttr(waterMark,Object.create(commonAttr))
-            waterMark.style.backgroundImage = `url(${waterCreate()})`
+            return dv
+        }
+        function CreateURL () {
+            const svgStr = 
+            `
+                <svg xmlns="http://www.w3.org/2000/svg" width="140px" height="160px">
+                    <text x="0px" y="30px" dy="16px"
+                    text-anchor = "start"
+                    stroke="#000"
+                    stroke-opacity="0.1"
+                    fill="none"
+                    transform="rotate(-30)"
+                    font-weight="100"
+                    >
+                        myTest
+                    </text>
+                </svg> 
+            `
+            return `data:image/svg+xml;base64,${window.btoa(unescape(encodeURIComponent(svgStr)))}`
+        }
+
+        const waterMark = createWaterMark(commonAttr)
+        function waterMarkInit () {
+            waterMark.style.backgroundImage = `url(${CreateURL()})`
             document.body.appendChild(waterMark);
         }
-        createWaterMark()
+        waterMarkInit()
     </script>
     <script>
         // 观察器的配置（需要观察什么变动）
@@ -48,7 +66,7 @@
                 if( !target || target !== waterMark ) {
                     mutation.removedNodes.forEach(function (item) {
                         if (item === waterMark) {
-                            createWaterMark()
+                            waterMarkInit()
                         }
                     });  
                     return

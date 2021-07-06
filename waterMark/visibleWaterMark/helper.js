@@ -9,6 +9,6 @@ const commonAttr = {
     right: '0px',
     bottom: '0px',
     left: '0px',
-    'pointer-events': 'none',
-    'background-repeat': 'repeat',
+    pointerEvents: 'none',
+    backgroundRepeat: 'repeat',
 }

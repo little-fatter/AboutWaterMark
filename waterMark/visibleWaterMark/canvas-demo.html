@@ -10,9 +10,27 @@
         <div>waterMark</div>
         <div>test</div>
     </div>
-    <script src="helper.js"></script>
+    <!-- <script src="helper.js"></script> -->
     <script>
-        function waterCreate() {
+        // 元素属性，撑满屏幕背景图片重复
+        const commonAttr = {
+            position: 'fixed',
+            top: '0px',
+            right: '0px',
+            bottom: '0px',
+            left: '0px',
+            pointerEvents: 'none',
+            backgroundRepeat: 'repeat',
+        }
+         // 生成element
+         function createWaterMark (attrs) {
+            const dv = document.createElement('div')
+            for( let i in attrs ) {
+                dv['style'][i] = attrs[i]
+            }
+            return dv
+        }
+        function createURL() {
             const angle = -30;
             const text = 'myTest';
             const canvas = document.createElement('canvas');
@@ -26,13 +44,12 @@
             ctx.fillText(text, 0, 50);
             return canvas.toDataURL();
         }
-        const waterMark = document.createElement('div')
-        function createWaterMark () {
-            createAttr(waterMark,Object.create(commonAttr))
-            waterMark.style.background = `url(${waterCreate()})`
+        const waterMark = createWaterMark(commonAttr)
+        function waterMarkInit () {
+            waterMark.style.background = `url(${createURL()})`
             document.body.appendChild(waterMark)
         }
-        createWaterMark ()
+        waterMarkInit ()
     </script>
 </body>
 </html>

@@ -30,13 +30,13 @@
                     if(data[i] % 2 == 0){
                         data[i] = 0;
                     } else {
-                        data[i] = 255;
+                        data[i] = 100;
                     }
                 } else if(i % 4 == 3){
                     // alpha通道不做处理
                     continue;
                 } else {
-                    data[i] = 100;
+                    // data[i] = 100;
                 }
             }
             // 将结果绘制到画布
@@ -59,7 +59,7 @@
                         console.log(imageData)
                         var temp= new ImageData(imageData.width, imageData.height);
                             temp.data.set(imageData.data);
-                        processData(temp, 'B')
+                        processData(temp, 'G')
 						filter_cxt.putImageData(imageData,0,0);
 					}
 				}

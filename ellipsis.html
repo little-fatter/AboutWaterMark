@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <style>
+            .box {
+                width: 10%;
+            }
+        </style>
+    </head>
+<body>
+<div id="app">
+    <todo-item></todo-item>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script type="text/javascript">
+Vue.component('todo-item', {
+  template: `
+    <div>
+        <div v-ellipsis="3" class="box">这是个待办项中文加数字加拼音加字符</div>
+    </div>
+        `
+})
+async function handleObserver (el, binding) {
+    // 判断元素能容纳的字数总量并插入省略号
+    // 当前仅适用于文本为中文，英文或符号需自行处理
+    const { width, fontSize } = await getComputedStyle(el)
+    const baseText = el.$originText
+    const lineDisplayAble = Math.floor(width.slice(0,-2) / fontSize.slice(0,-2))
+    const lineNum = Number(binding.value) || 2
+    if(baseText.length > lineDisplayAble * lineNum) {
+        const moreNum = lineDisplayAble * lineNum - baseText.length
+        const content = baseText.slice(0,moreNum - 5 ).concat('...').concat(baseText.substring(baseText.length - 3, baseText.length ))
+        el.innerText = content
+    } else {
+        el.innerText = el.$originText
+    }
+}
+function setText(el, binding) {
+    el.$originText = el.innerText
+    let timer
+    handleObserver (el, binding)
+    // 绑定 ResizeObserver 监听元素尺寸修改
+    let ResizeObserver = window.ResizeObserver
+    el.$observer = new ResizeObserver((entries) => {
+        if(timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+            handleObserver (el, binding)
+        },300)
+    })
+    el.$observer.observe(el)
+}
+Vue.directive('ellipsis', {
+    bind: setText,
+    unbind: function(el) {
+        el.$observer.disconnect()
+        el.$observer = null
+    }
+})
+ var app = new Vue({
+     el: '#app',
+ })
+</script>
+
+
+</body>
+</html>

@@ -55,3 +55,70 @@ Vue.directive('ellipsis', {
     }
 })
 ```
+### 进阶方案：利用行高解决中英文宽度占比不同的问题
+
+```javascript
+/* 
+el：DOM 对象
+baseText：采用的文本
+calText: 截断的文本
+lineNum：目标显示行数
+suffix：默认后缀
+*/
+function textMetrics (el,baseText,calText,lineNum,suffix) {
+  const { lineHeight, height } = getComputedStyle(el)
+  // 二分法增删文本，判断 DOM 行数是否大于目标行数，设置终止条件。 
+  if(baseText.length < 2) {
+    return
+  } else if(height.slice(0,-2) / lineHeight.slice(0,-2) >= lineNum + 1) {
+    const newBaseText = baseText.slice(0,Math.floor(baseText.length / 2))
+    const newCalText = baseText.slice(Math.floor(baseText.length / 2))
+    el.innerText = newBaseText + suffix
+    textMetrics(el,newBaseText,newCalText,lineNum,suffix)
+  } else if (!calText || calText.length < 2) {
+    return
+  } else {
+    const newBaseText = baseText + calText.slice(0,Math.floor(calText.length / 2))
+    const newCalText = calText.slice(Math.floor(calText.length / 2))
+    el.innerText = newBaseText + suffix
+    textMetrics(el,newBaseText,newCalText,lineNum,suffix)
+  }
+}
+async function handleObserver (el, binding, maxNum = 0) {
+  // 判断元素能容纳的字数总量并插入省略号
+  let { width } = await getComputedStyle(el)
+  if(!width || width === 'auto') {
+    if(maxNum > 10) return
+    const timer = setTimeout(() => {
+      maxNum++
+      handleObserver (el, binding,maxNum)
+      clearTimeout(timer)
+    }, 1000)
+  }
+  // 保存原始文本供后续宽度增加回复文本
+  const baseText = el.$originText
+  const lineNum = Number(binding.value) || 2
+  const suffix = '...'+el.$originText.slice(-4)
+  textMetrics(el,baseText,null,lineNum,suffix)
+}
+function setText(el, binding) {
+  let baseWidth
+  el.$originText = el.innerText
+  let timer
+  handleObserver (el, binding)
+  // 绑定 ResizeObserver 监听元素尺寸修改
+  let ResizeObserver = window.ResizeObserver
+  el.$observer = new ResizeObserver((entries) => {
+    if(timer) clearTimeout(timer)
+    setTimeout(() => {
+        // 如果宽度增加，初始化文本
+      if (baseWidth && entries[0] && baseWidth < entries[0].contentRect.width) {
+        el.innerText = el.$originText
+      }
+      baseWidth = entries[0] && entries[0].contentRect.width
+      handleObserver (el, binding)
+    },300)
+  })
+  el.$observer.observe(el)
+}
+```

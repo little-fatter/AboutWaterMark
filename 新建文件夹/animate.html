@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta lang="utf-8">
+        <meta content="viewport">
+        <title>动画实现</title>
+        <style>
+            #div {
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                background-color: aqua;
+                position: relative;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="div"></div>
+        <script>
+            var tween = {
+                linear: function( t, b, c, d ){
+                return c*t/d + b;
+                },
+                easeIn: function( t, b, c, d ){
+                return c * ( t /= d ) * t + b;
+                },
+                strongEaseIn: function(t, b, c, d){
+                return c * ( t /= d ) * t * t * t * t + b;
+                },
+                strongEaseOut: function(t, b, c, d){
+                return c * ( ( t = t / d - 1) * t * t * t * t + 1 ) + b;
+                },
+                sineaseIn: function( t, b, c, d ){
+                return c * ( t /= d) * t * t + b;
+                },
+                sineaseOut: function(t,b,c,d){
+                return c * ( ( t = t / d - 1) * t * t + 1 ) + b;
+                }
+            };
+            var Animate = function (dom) {
+                this.dom = dom;
+                this.startTime = 0;
+                this.startPos = 0;
+                this.endPos = 0;
+                this.propertyName = null;
+                this.easing = null;
+                this.duration = null;
+            }
+            Animate.prototype.start = function (propertyName,endPos,duration,easing) {
+                return new Promise((resolve, reject) => {
+                    this.startTime = +new Date;
+                    this.startPos = this.dom.getBoundingClientRect()[propertyName];
+                    this.endPos = endPos;
+                    this.propertyName = propertyName;
+                    this.easing = tween[easing];
+                    this.duration = duration;
+                    var self = this
+                    var timerId = setInterval(function(){
+                        if(self.step() === false) {
+                            clearInterval(timerId)
+                            resolve()
+                        }
+                    },19)
+                })
+
+            }
+            Animate.prototype.step = function () {
+                var t = +new Date();
+                // console.log(t,this.startTime, this.duration , t - this.startTime - this.duration)
+                if(t > this.startTime + this.duration) {
+                    this.update(this.endPos)
+                    return false
+                }
+                var pos = this.easing(t - this.startTime,this.startPos,this.endPos - this.startPos, this.duration)
+                this.update(pos)
+            }
+            Animate.prototype.update = function (pos) {
+                console.log(this.dom.style)
+                this.dom.style[this.propertyName] = pos + 'px'
+            } 
+            var div = document.getElementById('div')
+            const createAnimate = async function () {
+                var animate = new Animate(div)
+                await animate.start('left',500,2000,'strongEaseOut')
+                await animate.start('top',300,1000,'linear')
+                await animate.start('left',300,1000,'sineaseIn')
+            }
+            createAnimate()
+        </script>
+    </body>
+</html>

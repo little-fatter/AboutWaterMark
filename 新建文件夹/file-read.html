@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        
+    </head>
+<body>
+
+<div>
+    <input type="file" id="openFile" accept=".csv" />
+    <br>
+    <pre id="fileContents"></pre>
+</div>
+<script src="./PapaParse-5.0.2/papaparse.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jschardet/1.4.1/jschardet.min.js"></script>
+<script type="text/javascript">
+    function checkEncoding(base64Str) {
+        var str = atob(base64Str.split(";base64,")[1])
+        var encoding = jschardet.detect(str);
+        encoding = encoding.encoding;
+        if(encoding == "windows-1252") {
+            encoding = "ANSI"
+        }
+        return encoding
+    }
+</script>
+<script type="text/javascript">
+document.getElementById("openFile").addEventListener('change', function(){
+    var fr = new FileReader();
+    var _this = this
+    if(typeof fr == 'undefined') {
+		showTip("您的浏览器暂不支持该功能", false);
+		return;
+	}
+    fr.onload = function(){
+        var encoding = checkEncoding(this.result)
+        console.log(encoding, 'encoding')
+        Papa.parse(_this.files[0], {
+            encoding: encoding,
+            complete: function(results) {
+                console.log(results,results.data[0]);
+            }
+        })
+    }
+    fr.readAsDataURL(this.files[0]);
+})
+</script>
+
+</body>
+</html>

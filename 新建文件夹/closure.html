@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="utf-8">
+    <head>
+        <meta charset="utf-8"/>
+        <title>闭包循环引用</title>
+        <meta name="viewport" content="width=device-width">
+        <style>
+            div {
+                height: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="div">
+            <div style="float:left;background-color: rebeccapurple;"></div>
+            <div id="div2" style="float:right;width:260px;background-color:burlywood;"></div>
+        </div>
+        <script>
+            console.log('code rewriting')
+        </script>
+    </body>
+</html>
